@@ -1,0 +1,29 @@
+[Unit]
+Description=vnnews-bot — tin tuc bao VN -> Telegram
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vnnews
+Group=vnnews
+WorkingDirectory=/opt/vnnews-bot
+EnvironmentFile=/etc/vnnews-bot.env
+Environment=VNNEWS_STATE=/var/lib/vnnews-bot/seen.json
+ExecStart=/usr/bin/python3 -m vnnews_bot run
+Restart=on-failure
+RestartSec=10
+
+# --- hardening ---
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+StateDirectory=vnnews-bot
+ReadWritePaths=/var/lib/vnnews-bot
+
+[Install]
+WantedBy=multi-user.target

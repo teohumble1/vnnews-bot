@@ -1,0 +1,61 @@
+name: vnnews-bot
+
+# Gần real-time: cron chạy mỗi 5 phút (best-effort của GitHub); mỗi lần chạy
+# lặp poll ~70s trong ~4,5 phút để phủ kín khoảng giữa 2 nhịp cron.
+# concurrency serialize để không có 2 run song song gửi trùng tin.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: vnnews-bot
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Nạp lại danh sách link đã gửi từ lần chạy trước (chống trùng)
+      - name: Restore seen state
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: vnnews-seen-${{ github.run_id }}
+          restore-keys: |
+            vnnews-seen-
+
+      - name: Poll & send
+        env:
+          VNNEWS_BOT_TOKEN: ${{ secrets.VNNEWS_BOT_TOKEN }}
+          VNNEWS_CHAT_ID: ${{ secrets.VNNEWS_CHAT_ID }}
+          VNNEWS_STATE: ${{ github.workspace }}/state/seen.json
+        run: |
+          mkdir -p state
+          end=$((SECONDS + 270))          # ~4,5 phút
+          n=0
+          while [ "$SECONDS" -lt "$end" ]; do
+            n=$((n + 1))
+            echo "::group::cycle $n"
+            python -m vnnews_bot once || echo "cycle lỗi, bỏ qua"
+            echo "::endgroup::"
+            [ "$SECONDS" -lt "$end" ] && sleep 70
+          done
+
+      # Lưu lại seen.json cho lần chạy sau
+      - name: Save seen state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: vnnews-seen-${{ github.run_id }}

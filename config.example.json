@@ -1,0 +1,6 @@
+{
+  "bot_token": "123456:ABC-DEF_thay-bang-token-that-tu-BotFather",
+  "chat_id": "-1001234567890",
+  "poll_interval": 120,
+  "max_per_cycle": 8
+}
