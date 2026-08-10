@@ -1,0 +1,59 @@
+name: vnnews-gov
+
+# Bot RIÊNG cho tin chính phủ/chính thống (Nhân Dân, TTXVN, CAND...).
+# Dùng chung code nhưng: nguồn từ config.gov.json, token riêng, cache seen riêng.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: vnnews-gov
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore seen state (gov)
+        uses: actions/cache/restore@v4
+        with:
+          path: state-gov
+          key: vnnews-gov-seen-${{ github.run_id }}
+          restore-keys: |
+            vnnews-gov-seen-
+
+      - name: Poll & send (gov)
+        env:
+          VNNEWS_CONFIG: config.gov.json
+          VNNEWS_BOT_TOKEN: ${{ secrets.VNNEWS_GOV_BOT_TOKEN }}
+          VNNEWS_CHAT_ID: ${{ secrets.VNNEWS_CHAT_ID }}
+          VNNEWS_STATE: ${{ github.workspace }}/state-gov/seen.json
+        run: |
+          mkdir -p state-gov
+          end=$((SECONDS + 270))          # ~4,5 phút
+          n=0
+          while [ "$SECONDS" -lt "$end" ]; do
+            n=$((n + 1))
+            echo "::group::cycle $n"
+            python -m vnnews_bot once || echo "cycle lỗi, bỏ qua"
+            echo "::endgroup::"
+            [ "$SECONDS" -lt "$end" ] && sleep 70
+          done
+
+      - name: Save seen state (gov)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state-gov
+          key: vnnews-gov-seen-${{ github.run_id }}

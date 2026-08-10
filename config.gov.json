@@ -1,0 +1,10 @@
+{
+  "sources": {
+    "Nhân Dân – Chính trị": "https://nhandan.vn/rss/chinhtri-1.rss",
+    "Nhân Dân – Thời sự": "https://nhandan.vn/rss/thoisu-1185.rss",
+    "TTXVN – Chính trị": "https://www.vietnamplus.vn/rss/chinhtri.rss",
+    "TTXVN – Mới nhất": "https://www.vietnamplus.vn/rss/tin-moi-nhat.rss",
+    "Công an Nhân dân": "https://cand.com.vn/rss/trang-chu.rss"
+  },
+  "max_per_cycle": 6
+}
