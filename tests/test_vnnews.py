@@ -3,6 +3,7 @@
 import gzip
 import sys
 import unittest
+import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
 
@@ -68,6 +69,26 @@ class ParseTests(unittest.TestCase):
     def test_article_key_fallback(self):
         a = Article("S", "Tieu de", "", "", None)
         self.assertEqual(a.key(), "Tieu de")                          # không link → dùng title
+
+    def test_image_from_enclosure(self):
+        item = ET.fromstring(RSS).find(".//item")                     # item đầu không có ảnh
+        self.assertIsNone(feeds._extract_image(item, item.findtext("description")))
+        enc = ET.fromstring(
+            '<item><enclosure url="https://x.vn/a.jpg" type="image/jpeg"/>'
+            '<description>hi</description></item>')
+        self.assertEqual(feeds._extract_image(enc, "hi"), "https://x.vn/a.jpg")
+
+    def test_image_from_description_img(self):
+        item = ET.fromstring('<item><description>&lt;img src="https://y.vn/p.png"&gt;x</description></item>')
+        # description là HTML-escaped -> unescape trước khi tìm img
+        raw = __import__("html").unescape(item.findtext("description"))
+        self.assertEqual(feeds._extract_image(item, raw), "https://y.vn/p.png")
+
+    def test_image_from_media_thumbnail(self):
+        el = ET.fromstring(
+            '<item xmlns:media="http://search.yahoo.com/mrss/">'
+            '<media:thumbnail url="https://z.vn/t.jpg"/></item>')
+        self.assertEqual(feeds._extract_image(el, None), "https://z.vn/t.jpg")
 
 
 class StoreTests(unittest.TestCase):

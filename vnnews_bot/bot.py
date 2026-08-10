@@ -33,6 +33,22 @@ def format_message(a: Article) -> str:
     return "\n\n".join(parts)
 
 
+def _deliver(tg: Telegram, chat_id: str, a: Article, msg: str) -> bool:
+    """Gửi 1 bài: ưu tiên kèm ảnh (sendPhoto), fallback text. True nếu gửi được."""
+    if a.image:
+        try:
+            tg.send_photo(chat_id, a.image, msg)
+            return True
+        except TelegramError as e:
+            log.warning("Ảnh lỗi, gửi text thay (%s): %s", a.source, e)
+    try:
+        tg.send_message(chat_id, msg)
+        return True
+    except TelegramError as e:
+        log.error("Gửi thất bại: %s", e)
+        return False
+
+
 def collect_new(cfg: Config, seen: SeenStore) -> list[Article]:
     """Quét tất cả nguồn, trả về bài chưa từng gửi (mới nhất trước)."""
     fresh: list[Article] = []
@@ -63,13 +79,11 @@ def run_cycle(cfg: Config, tg: Telegram, seen: SeenStore, *, dry_run: bool = Fal
     for a in to_send:
         msg = format_message(a)
         if dry_run:
-            log.info("[dry-run] %s | %s", a.source, a.title)
+            img = "🖼" if a.image else "  "
+            log.info("[dry-run] %s %s | %s", img, a.source, a.title)
         else:
-            try:
-                tg.send_message(cfg.chat_id, msg)
-            except TelegramError as e:
-                log.error("Gửi thất bại: %s", e)
-                break                                # dừng vòng này, giữ chưa-seen để thử lại
+            if not _deliver(tg, cfg.chat_id, a, msg):
+                break                                # lỗi → giữ chưa-seen, thử lại sau
             time.sleep(1.2)                          # nương rate-limit Telegram
         seen.add(a.key())
         sent += 1

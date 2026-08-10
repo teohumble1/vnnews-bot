@@ -14,8 +14,12 @@ from email.utils import parsedate_to_datetime
 
 _USER_AGENT = "vnnews-bot/0.1 (+https://localhost)"
 _TAG_RE = re.compile(r"<[^>]+>")
+_IMG_RE = re.compile(r"""<img[^>]+src=['"]([^'"]+)""", re.IGNORECASE)
 # Namespace Atom (một số báo trả Atom thay vì RSS)
 _ATOM = "{http://www.w3.org/2005/Atom}"
+# Media RSS (media:content / media:thumbnail) — BBC, nhiều báo dùng
+_MRSS = "{http://search.yahoo.com/mrss/}"
+_IMG_EXT = (".jpg", ".jpeg", ".png", ".webp", ".gif")
 
 
 @dataclass
@@ -25,10 +29,34 @@ class Article:
     link: str
     summary: str
     published: datetime | None
+    image: str | None = None
 
     def key(self) -> str:
         """Định danh chống trùng: ưu tiên link, fallback title."""
         return self.link.strip() or self.title.strip()
+
+
+def _extract_image(item: ET.Element, raw_desc: str | None) -> str | None:
+    """Tìm URL ảnh thumbnail: enclosure → media:content/thumbnail → <img> trong description."""
+    # 1) <enclosure type="image/..."> hoặc url đuôi ảnh
+    for enc in item.findall("enclosure"):
+        url = enc.get("url")
+        typ = (enc.get("type") or "").lower()
+        if url and (typ.startswith("image") or url.lower().split("?")[0].endswith(_IMG_EXT)):
+            return url
+    # 2) media:content / media:thumbnail (có/không namespace), kể cả trong media:group
+    for parent in (item, item.find(f"{_MRSS}group")):
+        if parent is None:
+            continue
+        for tag in (f"{_MRSS}content", f"{_MRSS}thumbnail", "thumbnail", "content"):
+            el = parent.find(tag)
+            if el is not None and el.get("url"):
+                return el.get("url")
+    # 3) <img src="..."> trong description HTML
+    m = _IMG_RE.search(raw_desc or "")
+    if m:
+        return m.group(1)
+    return None
 
 
 def _decompress(data: bytes, encoding: str) -> bytes:
@@ -83,22 +111,26 @@ def fetch(source: str, url: str, timeout: int = 15) -> list[Article]:
 
 
 def _from_rss(source: str, item: ET.Element) -> Article:
+    raw_desc = item.findtext("description")
     return Article(
         source=source,
         title=_clean(item.findtext("title")),
         link=(item.findtext("link") or "").strip(),
-        summary=_clean(item.findtext("description")),
+        summary=_clean(raw_desc),
         published=_parse_date(item.findtext("pubDate")),
+        image=_extract_image(item, raw_desc),
     )
 
 
 def _from_atom(source: str, entry: ET.Element) -> Article:
     link_el = entry.find(f"{_ATOM}link")
     link = link_el.get("href") if link_el is not None else ""
+    raw_desc = entry.findtext(f"{_ATOM}summary")
     return Article(
         source=source,
         title=_clean(entry.findtext(f"{_ATOM}title")),
         link=(link or "").strip(),
-        summary=_clean(entry.findtext(f"{_ATOM}summary")),
+        summary=_clean(raw_desc),
         published=_parse_date(entry.findtext(f"{_ATOM}updated")),
+        image=_extract_image(entry, raw_desc),
     )

@@ -66,6 +66,15 @@ class Telegram:
             "disable_web_page_preview": "true" if disable_preview else "false",
         })
 
+    def send_photo(self, chat_id: str, photo: str, caption: str) -> dict:
+        """Gửi ảnh kèm caption (HTML). Caption tối đa 1024 ký tự."""
+        return self._call("sendPhoto", {
+            "chat_id": chat_id,
+            "photo": photo,
+            "caption": caption,
+            "parse_mode": "HTML",
+        })
+
     def get_me(self) -> dict:
         return self._call("getMe", {})
 
