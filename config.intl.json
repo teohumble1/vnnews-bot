@@ -1,0 +1,11 @@
+{
+  "sources": {
+    "VnExpress – Thế giới": "https://vnexpress.net/rss/the-gioi.rss",
+    "VnExpress – Kinh doanh": "https://vnexpress.net/rss/kinh-doanh.rss",
+    "Tuổi Trẻ – Thế giới": "https://tuoitre.vn/rss/the-gioi.rss",
+    "Dân Trí – Thế giới": "https://dantri.com.vn/rss/the-gioi.rss",
+    "TTXVN – Thế giới": "https://www.vietnamplus.vn/rss/thegioi.rss",
+    "BBC Tiếng Việt": "https://feeds.bbci.co.uk/vietnamese/rss.xml"
+  },
+  "max_per_cycle": 6
+}
