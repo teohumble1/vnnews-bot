@@ -11,5 +11,5 @@
     "Cisco Talos": "https://blog.talosintelligence.com/rss/",
     "CVE mới (cvefeed.io)": "https://cvefeed.io/rssfeed/latest.xml"
   },
-  "max_per_cycle": 6
+  "max_per_cycle": 10
 }
