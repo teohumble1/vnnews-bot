@@ -17,7 +17,7 @@ permissions:
 jobs:
   poll:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 58
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +41,8 @@ jobs:
           VNNEWS_STATE: ${{ github.workspace }}/state-finance/seen.json
         run: |
           mkdir -p state-finance
-          end=$((SECONDS + 480))          # ~8 phút — phủ liên tục, gối lên nhịp cron kế
+          end=$((SECONDS + 3000))         # ~50 phút: GitHub thực tế chỉ nổ cron ~1 lần/giờ,
+                                          # run 8 phút chỉ phủ 12% thời gian → tin trễ tới 1h
           n=0
           while [ "$SECONDS" -lt "$end" ]; do
             n=$((n + 1))
