@@ -19,7 +19,10 @@ def format_message(a: Article) -> str:
     title = html.escape(a.title)
     source = html.escape(a.source)
     parts = [f"📰 <b>{title}</b>"]
-    if a.summary:
+    # Bỏ tóm tắt nếu nó trùng/lặp tiêu đề (vd Google News nhét lại headline)
+    tkey = a.title.strip().lower()[:60]
+    same = bool(tkey) and a.summary.strip().lower().startswith(tkey)
+    if a.summary and not same:
         summary = a.summary[:280] + ("…" if len(a.summary) > 280 else "")
         parts.append(html.escape(summary))
     when = a.published.strftime("%H:%M %d/%m") if a.published else ""

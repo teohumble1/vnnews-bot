@@ -1,0 +1,13 @@
+{
+  "sources": {
+    "SpaceX (Google News)": "https://news.google.com/rss/search?q=SpaceX&hl=en-US&gl=US&ceid=US:en",
+    "Elon Musk (Google News)": "https://news.google.com/rss/search?q=Elon+Musk&hl=en-US&gl=US&ceid=US:en",
+    "Tesla (Google News)": "https://news.google.com/rss/search?q=Tesla&hl=en-US&gl=US&ceid=US:en",
+    "Nvidia (Google News)": "https://news.google.com/rss/search?q=Nvidia&hl=en-US&gl=US&ceid=US:en",
+    "OpenAI (Google News)": "https://news.google.com/rss/search?q=OpenAI&hl=en-US&gl=US&ceid=US:en",
+    "TechCrunch": "https://techcrunch.com/feed/",
+    "BBC Business": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "SpaceNews": "https://spacenews.com/feed/"
+  },
+  "max_per_cycle": 6
+}

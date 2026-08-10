@@ -1,0 +1,59 @@
+name: vnnews-world
+
+# Bot RIÊNG cho tin TIẾNG ANH quốc tế — theo dõi tập đoàn lớn (SpaceX, Tesla,
+# Nvidia, OpenAI...) + tech/business toàn cầu. Nguồn từ config.world.json.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: vnnews-world
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Restore seen state (world)
+        uses: actions/cache/restore@v4
+        with:
+          path: state-world
+          key: vnnews-world-seen-${{ github.run_id }}
+          restore-keys: |
+            vnnews-world-seen-
+
+      - name: Poll & send (world)
+        env:
+          VNNEWS_CONFIG: config.world.json
+          VNNEWS_BOT_TOKEN: ${{ secrets.VNNEWS_WORLD_BOT_TOKEN }}
+          VNNEWS_CHAT_ID: ${{ secrets.VNNEWS_CHAT_ID }}
+          VNNEWS_STATE: ${{ github.workspace }}/state-world/seen.json
+        run: |
+          mkdir -p state-world
+          end=$((SECONDS + 270))          # ~4,5 phút
+          n=0
+          while [ "$SECONDS" -lt "$end" ]; do
+            n=$((n + 1))
+            echo "::group::cycle $n"
+            python -m vnnews_bot once || echo "cycle lỗi, bỏ qua"
+            echo "::endgroup::"
+            [ "$SECONDS" -lt "$end" ] && sleep 70
+          done
+
+      - name: Save seen state (world)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state-world
+          key: vnnews-world-seen-${{ github.run_id }}
