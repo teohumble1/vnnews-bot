@@ -9,6 +9,9 @@
     "SANS ISC Diary": "https://isc.sans.edu/rssfeed.xml",
     "Unit 42 (Palo Alto)": "https://unit42.paloaltonetworks.com/feed/",
     "Cisco Talos": "https://blog.talosintelligence.com/rss/",
+    "Google Project Zero": "https://googleprojectzero.blogspot.com/feeds/posts/default",
+    "Schneier on Security": "https://www.schneier.com/feed/atom/",
+    "Malwarebytes Labs": "https://www.malwarebytes.com/blog/feed/index.xml",
     "CVE mới (cvefeed.io)": "https://cvefeed.io/rssfeed/latest.xml"
   },
   "max_per_cycle": 10
