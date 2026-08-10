@@ -5,6 +5,10 @@
     "Tesla (Google News)": "https://news.google.com/rss/search?q=Tesla&hl=en-US&gl=US&ceid=US:en",
     "Nvidia (Google News)": "https://news.google.com/rss/search?q=Nvidia&hl=en-US&gl=US&ceid=US:en",
     "OpenAI (Google News)": "https://news.google.com/rss/search?q=OpenAI&hl=en-US&gl=US&ceid=US:en",
+    "Apple (Google News)": "https://news.google.com/rss/search?q=Apple+Inc&hl=en-US&gl=US&ceid=US:en",
+    "Amazon (Google News)": "https://news.google.com/rss/search?q=Amazon+company&hl=en-US&gl=US&ceid=US:en",
+    "Meta (Google News)": "https://news.google.com/rss/search?q=Meta+Platforms&hl=en-US&gl=US&ceid=US:en",
+    "Microsoft (Google News)": "https://news.google.com/rss/search?q=Microsoft&hl=en-US&gl=US&ceid=US:en",
     "TechCrunch": "https://techcrunch.com/feed/",
     "BBC Business": "https://feeds.bbci.co.uk/news/business/rss.xml",
     "SpaceNews": "https://spacenews.com/feed/"
