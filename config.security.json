@@ -1,0 +1,15 @@
+{
+  "sources": {
+    "The Hacker News": "https://feeds.feedburner.com/TheHackersNews",
+    "BleepingComputer": "https://www.bleepingcomputer.com/feed/",
+    "Krebs on Security": "https://krebsonsecurity.com/feed/",
+    "Dark Reading": "https://www.darkreading.com/rss.xml",
+    "SecurityWeek": "https://www.securityweek.com/feed/",
+    "The Record": "https://therecord.media/feed",
+    "SANS ISC Diary": "https://isc.sans.edu/rssfeed.xml",
+    "Unit 42 (Palo Alto)": "https://unit42.paloaltonetworks.com/feed/",
+    "Cisco Talos": "https://blog.talosintelligence.com/rss/",
+    "CVE mới (cvefeed.io)": "https://cvefeed.io/rssfeed/latest.xml"
+  },
+  "max_per_cycle": 6
+}

@@ -15,7 +15,9 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
-_USER_AGENT = "vnnews-bot/0.1 (+https://localhost)"
+# UA kiểu trình duyệt: một số site (BleepingComputer, SecurityWeek) trả 403 cho UA lạ
+_USER_AGENT = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+               "(KHTML, like Gecko) Chrome/120.0 Safari/537.36")
 _TAG_RE = re.compile(r"<[^>]+>")
 _IMG_RE = re.compile(r"""<img[^>]+src=['"]([^'"]+)""", re.IGNORECASE)
 # Namespace Atom (một số báo trả Atom thay vì RSS)
