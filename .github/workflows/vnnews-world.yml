@@ -48,7 +48,7 @@ jobs:
             echo "::group::cycle $n"
             python -m vnnews_bot once || echo "cycle lỗi, bỏ qua"
             echo "::endgroup::"
-            [ "$SECONDS" -lt "$end" ] && sleep 45
+            [ "$SECONDS" -lt "$end" ] && sleep 45 || true
           done
 
       - name: Save seen state (world)
