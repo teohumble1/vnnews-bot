@@ -17,7 +17,7 @@ permissions:
 jobs:
   poll:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
 
@@ -41,14 +41,14 @@ jobs:
           VNNEWS_STATE: ${{ github.workspace }}/state-gov/seen.json
         run: |
           mkdir -p state-gov
-          end=$((SECONDS + 270))          # ~4,5 phút
+          end=$((SECONDS + 480))          # ~8 phút — phủ liên tục, gối lên nhịp cron kế
           n=0
           while [ "$SECONDS" -lt "$end" ]; do
             n=$((n + 1))
             echo "::group::cycle $n"
             python -m vnnews_bot once || echo "cycle lỗi, bỏ qua"
             echo "::endgroup::"
-            [ "$SECONDS" -lt "$end" ] && sleep 70
+            [ "$SECONDS" -lt "$end" ] && sleep 45
           done
 
       - name: Save seen state (gov)
