@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import gzip
 import html
+import http.client
 import re
+import time
+import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 import zlib
@@ -59,6 +62,25 @@ def _extract_image(item: ET.Element, raw_desc: str | None) -> str | None:
     return None
 
 
+def _download(url: str, timeout: int, attempts: int = 2) -> bytes:
+    """Tải feed, thử lại 1 lần khi lỗi mạng tạm thời (IncompleteRead, timeout...)."""
+    last: Exception | None = None
+    for i in range(attempts):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                data = resp.read()
+                encoding = (resp.headers.get("Content-Encoding") or "").lower()
+            return _decompress(data, encoding)
+        except urllib.error.HTTPError:
+            raise                                    # 404/403: thử lại vô ích
+        except (OSError, http.client.HTTPException) as e:
+            last = e
+            if i + 1 < attempts:
+                time.sleep(1)
+    raise last                                       # type: ignore[misc]
+
+
 def _decompress(data: bytes, encoding: str) -> bytes:
     """Một số báo (vd Tiền Phong) trả gzip dù client không xin. Tự nhận diện & giải nén."""
     if encoding == "gzip" or data[:2] == b"\x1f\x8b":
@@ -95,11 +117,7 @@ def _parse_date(raw: str | None) -> datetime | None:
 
 def fetch(source: str, url: str, timeout: int = 15) -> list[Article]:
     """Tải 1 feed, trả về danh sách Article. Lỗi mạng → raise cho caller xử lý."""
-    req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        data = resp.read()
-        encoding = (resp.headers.get("Content-Encoding") or "").lower()
-    data = _decompress(data, encoding)
+    data = _download(url, timeout)
     root = ET.fromstring(data)
 
     items = root.findall(".//item")

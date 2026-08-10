@@ -1,0 +1,15 @@
+{
+  "sources": {
+    "CafeF – Chứng khoán": "https://cafef.vn/thi-truong-chung-khoan.rss",
+    "VnExpress – Kinh doanh": "https://vnexpress.net/rss/kinh-doanh.rss",
+    "Chứng khoán VN (Google News)": "https://news.google.com/rss/search?q=ch%E1%BB%A9ng+kho%C3%A1n+VN-Index&hl=vi&gl=VN&ceid=VN%3Avi",
+    "Bitcoin VN (Google News)": "https://news.google.com/rss/search?q=bitcoin+gi%C3%A1&hl=vi&gl=VN&ceid=VN%3Avi",
+    "CoinDesk": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+    "Cointelegraph": "https://cointelegraph.com/rss",
+    "Bitcoin (Google News)": "https://news.google.com/rss/search?q=Bitcoin&hl=en-US&gl=US&ceid=US:en",
+    "CNBC – Markets": "https://www.cnbc.com/id/20910258/device/rss/rss.html",
+    "Yahoo Finance": "https://finance.yahoo.com/news/rssindex",
+    "Stock market (Google News)": "https://news.google.com/rss/search?q=stock+market+S%26P+500&hl=en-US&gl=US&ceid=US:en"
+  },
+  "max_per_cycle": 6
+}
